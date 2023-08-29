@@ -1,9 +1,16 @@
+import { BrowserProvider, Signer } from 'ethers'
 import { getClient } from './utils'
 import { adaptEthersSigner } from '@reservoir0x/ethers-wallet-adapter'
-import { useSigner } from 'wagmi'
 
 function BidButton() {
-  const { data: signer } = useSigner()
+  let signer: Signer
+
+  async function init () {
+    const provider = new BrowserProvider(window.ethereum!)
+    signer = await provider.getSigner()
+  }
+  
+  init()
   const collectionId = '0x05a0b0985ba3b7bd9ade8a7478caa2fa4fda24e5'
   const price = '100000000000000'
   return (

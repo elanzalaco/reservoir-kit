@@ -1,11 +1,20 @@
 import { getClient } from './utils'
 import { adaptEthersSigner } from '@reservoir0x/ethers-wallet-adapter'
-import { useSigner } from 'wagmi'
+import { BrowserProvider, Signer } from 'ethers'
 import { adaptGelatoRelayer } from '@reservoir0x/gelato-adapter'
 
 function BuyButton() {
-  const { data: signer } = useSigner()
+  let signer: Signer
+
+  async function init () {
+    const provider = new BrowserProvider(window.ethereum!)
+    signer = await provider.getSigner()
+  }
+  
+  init()
+
   const collectionId = '0x05a0b0985ba3b7bd9ade8a7478caa2fa4fda24e5'
+
 
   return (
     <div
@@ -25,7 +34,7 @@ function BuyButton() {
       <button
         onClick={() => {
           if (!signer) {
-            throw 'Signer not available!'
+            throw Error('Signer not available!')
           }
 
           getClient().actions.buyToken({
@@ -44,7 +53,7 @@ function BuyButton() {
       <button
         onClick={() => {
           if (!signer) {
-            throw 'Signer not available!'
+            throw Error('Signer not available!')
           }
           getClient().actions.buyToken({
             items: [
@@ -69,7 +78,7 @@ function BuyButton() {
       <button
         onClick={() => {
           if (!signer) {
-            throw 'Signer not available!'
+            throw Error('Signer not available!')
           }
           getClient().actions.buyToken({
             items: [
