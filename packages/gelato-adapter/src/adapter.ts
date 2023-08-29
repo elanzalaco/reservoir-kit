@@ -4,9 +4,7 @@ import {
   GelatoRelay,
   RelayResponse,
 } from '@gelatonetwork/relay-sdk'
-import type { Signer } from 'ethers/lib/ethers'
-import { arrayify } from 'ethers/lib/utils'
-import type { TypedDataSigner } from '@ethersproject/abstract-signer/lib/index'
+import { Signer, getBytes} from "ethers"
 import { getTaskStatus } from './utils'
 
 // Returns a ReservoirWallet adapter that sends gasless transactions using Gelato
@@ -38,14 +36,12 @@ export const adaptGelatoRelayer = (
         if (signData.signatureKind === 'eip191') {
           if (signData.message.match(/0x[0-9a-fA-F]{64}/)) {
             // If the message represents a hash, we need to convert it to raw bytes first
-            signature = await signer.signMessage(arrayify(signData.message))
+            signature = await signer.signMessage(getBytes(signData.message))
           } else {
             signature = await signer.signMessage(signData.message)
           }
         } else if (signData.signatureKind === 'eip712') {
-          signature = await (
-            signer as unknown as TypedDataSigner
-          )._signTypedData(signData.domain, signData.types, signData.value)
+          signature = await signer.signTypedData(signData.domain, signData.types, signData.value)
         }
       }
       return signature
